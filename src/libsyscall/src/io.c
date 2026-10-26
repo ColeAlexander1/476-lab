@@ -1,8 +1,9 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stddef.h>
-#include <sys/types.h>
-#include <errno.h>
+#include <stddef.h>    
+#include <sys/types.h> 
+#include <errno.h>     
+#include <unistd.h>    
+#include <fcntl.h>     
+#include <sys/stat.h>  
 
 /* Open path for reading. Returns a file descriptor. */
 /* Errors:
@@ -96,7 +97,7 @@ int sc_close(int fd){
 
     int status = close(fd);
 
-    if ((result == -1) && (errno == EINTR)){
+    if ((status == -1) && (errno == EINTR)){
         return 0;
     }
     else if (status == -1){
@@ -152,9 +153,24 @@ int sc_write_all(int fd, const void *buf, size_t n){
  * not counted.
  */
 ssize_t sc_read_full(int fd, void *buf, size_t n){
-    
-    size_t read = 0;
+    size_t reads = 0;
     ssize_t result; 
+    while(reads < n){
+        result = read(fd, (char *)buf + reads, n - reads);
 
-    while (read < result)
+        if(result == -1 && errno == EINTR){
+            
+        }
+        else if (result == -1){
+            return -1;
+        }
+        else if (result == 0){
+            return reads;
+        }
+        else {
+            reads += result;
+        }
+
+    }
+   return reads; 
 }
