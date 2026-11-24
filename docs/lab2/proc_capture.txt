@@ -1,0 +1,24 @@
+    PID    PPID STAT COMMAND
+  58767   49298 S+   build/demo_lab2 --sched priority --ms 20000 --kill-sensor AUR --expected common/traffic.txt --log docs/lab2/missions.log
+  58768   58767 S+   /home/coles/sentinel-template/build/contactfeed --sensor NWS --rate 20
+  58770   58767 S+   /home/coles/sentinel-template/build/contactfeed --sensor AIS --rate 50
+  58771   58767 S+   /home/coles/sentinel-template/build/contactfeed --sensor SAT --rate 2000
+  58772   58767 Z+   [demo_lab2] <defunct>
+
+total 0
+lrwx------ 1 coles coles 64 Nov 10 09:24 0 -> /dev/pts/7
+l-wx------ 1 coles coles 64 Nov 10 09:24 1 -> /home/coles/sentinel-template/docs/lab2/demo_output.txt
+lrwx------ 1 coles coles 64 Nov 10 09:24 2 -> /dev/pts/7
+l-wx------ 1 coles coles 64 Nov 10 09:24 28 -> /home/coles/.vscode-server/data/logs/20261108T151957/mcpGateway.log
+lrwx------ 1 coles coles 64 Nov 10 09:24 3 -> /home/coles/sentinel-template/docs/lab2/missions.log
+lr-x------ 1 coles coles 64 Nov 10 09:24 4 -> /tmp/sentinel_priority.fifo
+l-wx------ 1 coles coles 64 Nov 10 09:24 5 -> /tmp/sentinel_priority.fifo
+lr-x------ 1 coles coles 64 Nov 10 09:24 6 -> pipe:[758911]
+lr-x------ 1 coles coles 64 Nov 10 09:24 8 -> pipe:[758913]
+lr-x------ 1 coles coles 64 Nov 10 09:24 9 -> pipe:[758914]
+
+total 0
+lrwx------ 1 coles coles 64 Nov 10 09:24 0 -> /dev/pts/7
+l-wx------ 1 coles coles 64 Nov 10 09:24 1 -> pipe:[758911]
+lrwx------ 1 coles coles 64 Nov 10 09:24 2 -> /dev/pts/7
+l-wx------ 1 coles coles 64 Nov 10 09:24 28 -> /home/coles/.vscode-server/data/logs/20261108T151957/mcpGateway.log

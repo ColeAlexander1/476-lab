@@ -43,10 +43,22 @@
  */
 int queue_init(queue_t *q, size_t capacity)
 {
-    (void)q;
-    (void)capacity;
-    errno = ENOSYS;
-    return -1;
+    if (q == NULL || capacity == 0){
+        errno = EINVAL;
+        return -1;
+    }
+
+    memset(q, 0, sizeof *q);
+    q->slots = calloc(capacity, sizeof *q->slots);
+
+    if(q->slots == NULL){
+        errno = ENOMEM;
+        return -1;
+    }
+
+    q->capacity = capacity;
+    return 0;
+
 }
 
 /* queue_destroy: free the slots.
@@ -57,7 +69,14 @@ int queue_init(queue_t *q, size_t capacity)
  */
 void queue_destroy(queue_t *q)
 {
-    (void)q;
+    if(q == NULL){
+        return;
+    }
+
+    free(q->slots);
+    q->slots = NULL;
+    q->capacity = 0;
+    q->count = 0;
 }
 
 /* queue_push: put a copy of *p at the tail.
@@ -73,10 +92,26 @@ void queue_destroy(queue_t *q)
  */
 int queue_push(queue_t *q, const pending_t *p)
 {
-    (void)q;
-    (void)p;
-    errno = ENOSYS;
-    return -1;
+    if( p == NULL || q == NULL){
+        errno = EINVAL;
+        return -1;
+    }
+
+    if(q->count == q->capacity){
+        q->rejected++;
+        errno = ENOSPC;
+        return -1;
+    }
+
+    q->slots[q->tail] = *p;
+    q->tail = (q->tail + 1) % q->capacity;
+    q->count++;
+    q->pushed++;
+    if (q->count > q->peak){
+        q->peak = q->count;
+    }
+
+    return 0;
 }
 
 /* queue_pop: take the report at the head.
@@ -91,10 +126,21 @@ int queue_push(queue_t *q, const pending_t *p)
  */
 int queue_pop(queue_t *q, pending_t *out)
 {
-    (void)q;
-    (void)out;
-    errno = ENOSYS;
-    return -1;
+    if(q == NULL || out == NULL){
+        errno = EINVAL;
+        return -1;
+    }
+
+    if(q->count == 0){
+        return 0;
+    }
+
+    *out = q->slots[q->head];
+    q->head = (q->head + 1) % q->capacity;
+
+    q->count--;
+    q->popped++;
+    return 1;
 }
 
 /* queue_count: the number of reports that wait.
@@ -104,6 +150,8 @@ int queue_pop(queue_t *q, pending_t *out)
  */
 size_t queue_count(const queue_t *q)
 {
-    (void)q;
-    return 0;
+    if (q == NULL){
+        return 0;
+    }
+    return q->count;
 }

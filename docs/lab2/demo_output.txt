@@ -1,0 +1,33 @@
+SENTINEL Part 2 — operations centre
+  sensors started   4 of 4
+  policy            priority
+  work per report   500 us
+  priority channel  /tmp/sentinel_priority.fifo
+  mission log       docs/lab2/missions.log
+
+operations centre
+  policy          priority
+  elapsed         20003.948 ms
+  reports read    19056
+  accepted        19056
+  rejected        0
+  wrong channel   0 (in rejected)
+  sensor P        1909
+  centre HIGH     615
+  via FIFO        1
+    NWS           401
+    AUR           3
+    AIS           1000
+    SAT           17651
+  latency mean    18.944 ms
+  latency worst   60.481 ms
+  urgent mean     2.623 ms   (HIGH and P)
+  urgent worst    16.820 ms
+
+requirements
+  R1 four sensors report at once      yes
+  R1 centre survives a sensor death   yes (AUR killed, steady sensors alive, 19056 reports served)
+  R2 priority contact overtakes       yes (priority waits 2.6 ms, all traffic 18.9 ms)
+  centre priority HIGH                615 reports (not filed, in a monitored region)
+  R6 every action timestamped         yes (docs/lab2/missions.log)
+  urgent contact via FIFO             received

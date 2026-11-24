@@ -55,20 +55,29 @@ void sc_now_wall(int64_t *sec, int32_t *usec)
  * buf == NULL gives -1 with EINVAL. A buffer that is too small gives -1 with
  * ERANGE. On a failure, buf is not changed.
  */
-int sc_stamp(char *buf, size_t buflen){
-    if (buf == NULL){
+
+int sc_stamp(char *buf, size_t buflen)
+{
+    if (buf == NULL) {
         errno = EINVAL;
         return -1;
     }
-    else if(buflen < SC_STAMP_MAX){
+
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+
+    char temp[SC_STAMP_MAX];
+
+    int stamplen = snprintf(temp, sizeof(temp), "%lld.%06ld",
+                            (long long)ts.tv_sec, ts.tv_nsec / 1000);
+
+    if (buflen < (size_t)stamplen + 1) {
         errno = ERANGE;
         return -1;
     }
-    
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    int stamplen = snprintf(buf, buflen, "%lld.%06ld", (long long)ts.tv_sec, ts.tv_nsec/1000);
 
-   
+    memcpy(buf, temp, (size_t)stamplen + 1);
+
     return stamplen;
 }
+

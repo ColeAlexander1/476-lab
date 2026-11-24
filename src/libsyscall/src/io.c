@@ -13,11 +13,11 @@
 int sc_open_read(const char *path){
 
     int fd;
-    fd = open(path, O_RDONLY);
+    fd = open(path, O_RDONLY | O_CLOEXEC);
 
     while((fd==-1)&&(errno==EINTR)){
 
-        fd = open(path, O_RDONLY);
+        fd = open(path, O_RDONLY | O_CLOEXEC);
     }
     return fd;
 }
@@ -39,19 +39,19 @@ int sc_open_write(const char *path, int append){
     
     int fd;
     if(append != 0){
-    fd = open(path, O_WRONLY | O_APPEND | O_CREAT, 0644);
+    fd = open(path, O_WRONLY | O_APPEND | O_CREAT | O_CLOEXEC, 0644);
     }
     else {
-    fd = open(path, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+    fd = open(path, O_WRONLY | O_TRUNC | O_CREAT | O_CLOEXEC, 0644);
     }
   
     while((fd==-1)&&(errno==EINTR)){
 
         if(append != 0){
-        fd = open(path, O_WRONLY | O_APPEND | O_CREAT, 0644);
+        fd = open(path, O_WRONLY | O_APPEND | O_CREAT | O_CLOEXEC, 0644);
         }
         else {
-        fd = open(path, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+        fd = open(path, O_WRONLY | O_TRUNC | O_CREAT | O_CLOEXEC, 0644);
     }
 
     }  
@@ -68,19 +68,19 @@ int sc_open_write_mode(const char *path, int append, mode_t mode){
     
     int fd;
     if(append != 0){
-    fd = open(path, O_WRONLY | O_APPEND | O_CREAT, mode);
+    fd = open(path, O_WRONLY | O_APPEND | O_CREAT | O_CLOEXEC, mode);
     }
     else {
-    fd = open(path, O_WRONLY | O_TRUNC | O_CREAT, mode);
+    fd = open(path, O_WRONLY | O_TRUNC | O_CREAT | O_CLOEXEC, mode);
     }
   
     while((fd==-1)&&(errno==EINTR)){
 
         if(append != 0){
-        fd = open(path, O_WRONLY | O_APPEND | O_CREAT, mode);
+        fd = open(path, O_WRONLY | O_APPEND | O_CREAT | O_CLOEXEC, mode);
         }
         else {
-        fd = open(path, O_WRONLY | O_TRUNC | O_CREAT, mode);
+        fd = open(path, O_WRONLY | O_TRUNC | O_CREAT | O_CLOEXEC, mode);
     }
 
     }  

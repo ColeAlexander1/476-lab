@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include "syscall.h"
+#include "sentinel/syscall.h"
 #include <stdio.h>
 #include <stdarg.h>
 #define SC_STAMP_MAX 32
@@ -48,11 +48,11 @@ log_t *log_open(const char *path){// function call would look like log_t *lg = l
     
     int fd;
     mode_t mode = 0600;
-    fd = open(path, O_RDWR | O_APPEND | O_CREAT, mode);
+    fd = open(path, O_WRONLY | O_APPEND | O_CREAT | O_CLOEXEC, mode);
    
     while((fd==-1)&&(errno==EINTR)){
 
-        fd = open(path, O_RDWR | O_APPEND | O_CREAT, mode); 
+        fd = open(path, O_WRONLY | O_APPEND | O_CREAT | O_CLOEXEC, mode); 
     } 
     
    
@@ -111,12 +111,12 @@ int log_writef(log_t *lg, log_level_t level, const char *fmt, ...){
     if(tslen == -1){
         return -1;
     }
-    char *lvl = log_level_name(level); 
+    const char *lvl = log_level_name(level); 
     if(lvl == NULL){
         errno = EINVAL;
         return -1;
     }
-    char buf[512]; 
+    char buf[513]; 
     int bytes = snprintf(buf, sizeof(buf), "%s %-8s ", ts, lvl);
 
     if (bytes < 0){
@@ -124,7 +124,7 @@ int log_writef(log_t *lg, log_level_t level, const char *fmt, ...){
         return -1;
     }
     
-    size_t max_size = 512 - bytes -2;//remaining size for message, room for newline at the end
+    size_t max_size = 512 - bytes -1;//remaining size for message, room for newline at the end
 
     char message[512]; 
     va_list args; 
@@ -144,7 +144,7 @@ int log_writef(log_t *lg, log_level_t level, const char *fmt, ...){
         max = max_size;
     }
 
-    for(int i = 0; i < max; i++){
+    for(size_t i = 0; i < max; i++){
         if(message[i] == '\n'){
             message[i] = ' '; 
         }
